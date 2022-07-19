@@ -1,0 +1,67 @@
+- name: Create Couchbase Namespace
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'namespaces.yaml.j2') }}"
+
+- name: Create Installation State Config Mapping
+  shell: |
+    INSTALLATION_CM_PRESENT=$(oc -n couchbase-try get cm cm-installation-state -o name)
+
+    if [ -z "$INSTALLATION_CM_PRESENT" ];
+    then
+      echo "Creating installation state config mapping"
+      oc -n couchbase-try apply -f {{ role_path }}/templates/cm-installation-state.yaml
+    else
+      echo "installation state config mapping already exists"
+    fi
+  register: cm_installation_state_result
+
+- debug: msg="{{ cm_installation_state_result.stdout }}"
+
+- name: Install Couchbase Operator
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'subs-couchbase.yaml.j2') }}"
+
+- name: Wait for Couchbase CRD to exist
+  kubernetes.core.k8s_info:
+    api_version: "apiextensions.k8s.io/v1"
+    kind: CustomResourceDefinition
+    name: "{{ item }}"
+  loop: "{{ couchbase_expected_crds }}"
+  register: crds
+  until: crds.resources|length > 0
+  retries: 10
+  delay: 30
+
+- name: Pause for 60 seconds to let deployment resources to be added
+  pause:
+    seconds: 60
+
+- name: Wait for Couchbase Operator to be available
+  shell: |
+    oc -n couchbase-try wait --for=condition=Ready pods --timeout=360s --selector app=couchbase-operator
+
+- name: Register Output Path Directory
+  stat:
+    path: "{{ role_path }}/files/out"
+  register: output_dir
+
+- name: Create Output directory
+  file:
+    path: "{{ role_path }}/files/out"
+    state: directory
+  when: not output_dir.stat.exists 
+
+- name: install Couchbase Instance
+  kubernetes.core.k8s:
+    state: present
+    definition: "{{ lookup('template', 'couchbase.yaml.j2') }}"
+
+- name: Pause for 180 seconds to let deployment resources to be added
+  pause:
+    seconds: 180
+
+- name: Wait for Couchbase pods
+  shell: |
+    oc -n couchbase-try wait --for=condition=Ready pods --timeout=360s --selector cluster=cb-example

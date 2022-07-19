@@ -1,0 +1,35 @@
+apiVersion: operators.coreos.com/v1alpha1
+kind: Subscription
+metadata:
+  labels:
+    operators.coreos.com/couchbase-operator: ''
+  name: couchbase-enterprise-certified
+  namespace: couchbase-try
+spec:
+  channel: stable
+  installPlanApproval: Automatic
+  name: couchbase-enterprise-certified
+  source: certified-operators
+  sourceNamespace: openshift-marketplace
+---
+
+apiVersion: operators.coreos.com/v1
+kind: OperatorGroup
+metadata:
+  annotations:
+    olm.providedAPIs: >-
+      CouchbaseAutoscaler.v2.couchbase.com,CouchbaseBackup.v2.couchbase.com,CouchbaseBackupRestore.v2.couchbase.com,CouchbaseBucket.v2.couchbase.com,CouchbaseCluster.v2.couchbase.com,CouchbaseCollection.v2.couchbase.com,CouchbaseCollectionGroup.v2.couchbase.com,CouchbaseEphemeralBucket.v2.couchbase.com,CouchbaseGroup.v2.couchbase.com,CouchbaseMemcachedBucket.v2.couchbase.com,CouchbaseMigrationReplication.v2.couchbase.com,CouchbaseReplication.v2.couchbase.com,CouchbaseRoleBinding.v2.couchbase.com,CouchbaseScope.v2.couchbase.com,CouchbaseScopeGroup.v2.couchbase.com,CouchbaseUser.v2.couchbase.com 
+  name: couchbase-operatorgroup
+  namespace: couchbase-try
+spec:
+  targetNamespaces:
+  - couchbase-try
+  installModes:
+    - supported: true
+      type: OwnNamespace
+    - supported: true
+      type: SingleNamespace
+    - supported: false
+      type: MultiNamespace
+    - supported: true
+      type: AllNamespaces

@@ -1,0 +1,128 @@
+apiVersion: v1
+kind: Secret
+metadata:
+  name: couchbase-secret
+  namespace: couchbase-try
+type: Opaque
+data:
+  password: cGFzc3dvcmQ=
+  username: QWRtaW5pc3RyYXRvcg==
+---
+
+apiVersion: couchbase.com/v2
+kind: CouchbaseCluster
+metadata:
+  name: cb-example
+  namespace: couchbase-try
+spec:
+  security:
+    adminSecret: couchbase-secret
+    rbac:
+      managed: true
+      selector:
+        matchLabels:
+          cluster: cb-example
+          app: cb-example
+  backup:
+    serviceAccountName: couchbase-backup
+    image: >-
+      registry.connect.redhat.com/couchbase/operator-backup@sha256:c0ab51854294d117c4ecf867b541ed6dc67410294d72f560cc33b038d98e4b76
+    managed: false
+    selector:
+      matchLabels:
+        cluster: cb-example
+  enablePreviewScaling: false
+  recoveryPolicy: PrioritizeDataIntegrity
+  monitoring:
+    prometheus:
+      enabled: false
+      image: >-
+        registry.connect.redhat.com/couchbase/exporter@sha256:b9ff3aec88f42f8e6164d61a1c5f845b4c3dd3f606ac552170d5c61311ce5784
+  hibernationStrategy: Immediate
+  buckets:
+    managed: true
+    selector:
+      matchLabels:
+        cluster: cb-example
+  upgradeStrategy: RollingUpgrade
+  servers:
+    - size: 3
+      name: all_services
+      services:
+        - data
+        - index
+        - query
+        - search
+        - eventing
+        - analytics
+  hibernate: false
+  networking:
+    adminConsoleServices:
+      - data
+    adminConsoleServiceType: NodePort
+    exposeAdminConsole: true
+    waitForAddressReachable: 10m
+    waitForAddressReachableDelay: 2m
+    exposedFeatureServiceType: NodePort
+    tls:
+      tlsMinimumVersion: TLS1.2
+    exposedFeatures:
+      - xdcr
+  cluster:
+    autoFailoverTimeout: 120s
+    autoFailoverOnDataDiskIssues: true
+    clusterName: cb-example
+    indexStorageSetting: memory_optimized
+    query:
+      backfillEnabled: true
+      temporarySpace: 1Gi
+    analyticsServiceMemoryQuota: 1Gi
+    eventingServiceMemoryQuota: 256Mi
+    searchServiceMemoryQuota: 256Mi
+    autoFailoverMaxCount: 3
+    dataServiceMemoryQuota: 256Mi
+    autoFailoverOnDataDiskIssuesTimePeriod: 120s
+    indexServiceMemoryQuota: 256Mi
+    autoCompaction:
+      databaseFragmentationThreshold:
+        percent: 30
+      tombstonePurgeInterval: 72h
+      viewFragmentationThreshold:
+        percent: 30
+    autoFailoverServerGroup: false
+    indexer:
+      logLevel: info
+      maxRollbackPoints: 2
+      memorySnapshotInterval: 200ms
+      stableSnapshotInterval: 5s
+      storageMode: memory_optimized
+  xdcr:
+    managed: false
+    selector:
+      matchLabels:
+        cluster: cb-example
+  image: >-
+    registry.connect.redhat.com/couchbase/server@sha256:cb8c5aba14feb955854a17c0923f79c8476872f86b3f52570d859b991d23231b
+  autoResourceAllocation:
+    cpuLimits: '4'
+    cpuRequests: '2'
+    overheadPercent: 25
+  logging:
+    audit:
+      garbageCollection:
+        sidecar:
+          age: 1h
+          image: 'busybox:1.33.1'
+          interval: 20m
+      rotation:
+        interval: 15m
+        size: 20Mi
+    server:
+      configurationName: fluent-bit-config
+      manageConfiguration: true
+      sidecar:
+        configurationMountPath: /fluent-bit/config/
+        image: 'couchbase/fluent-bit:1.1.1'
+  logRetentionTime: 604800s
+  logRetentionCount: 20
+

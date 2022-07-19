@@ -1,0 +1,19 @@
+ocp4_couchbase_namespace: couchbase-try
+
+couchbase_expected_crds:
+- couchbaseautoscalers.couchbase.com
+- couchbasebackups.couchbase.com
+- couchbasebackuprestores.couchbase.com
+- couchbasebuckets.couchbase.com
+- couchbaseclusters.couchbase.com
+- couchbasecollections.couchbase.com
+- couchbasecollectiongroups.couchbase.com
+- couchbaseephemeralbuckets.couchbase.com
+- couchbasegroups.couchbase.com
+- couchbasememcachedbuckets.couchbase.com
+- couchbasemigrationreplications.couchbase.com
+- couchbasereplications.couchbase.com
+- couchbaserolebindings.couchbase.com
+- couchbasescopes.couchbase.com
+- couchbasescopegroups.couchbase.com
+- couchbaseusers.couchbase.com

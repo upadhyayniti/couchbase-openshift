@@ -7,4 +7,4 @@ data:
 kind: ConfigMap
 metadata:
   name: cm-installation-state
-  namespace: couchbase-try
+  namespace: couchbase

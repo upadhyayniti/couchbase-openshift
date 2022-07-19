@@ -1,4 +1,4 @@
-ocp4_couchbase_namespace: couchbase-try
+ocp4_couchbase_namespace: couchbase
 
 couchbase_expected_crds:
 - couchbaseautoscalers.couchbase.com

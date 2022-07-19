@@ -4,7 +4,7 @@ metadata:
   labels:
     operators.coreos.com/couchbase-operator: ''
   name: couchbase-enterprise-certified
-  namespace: couchbase-try
+  namespace: couchbase
 spec:
   channel: stable
   installPlanApproval: Automatic
@@ -20,10 +20,10 @@ metadata:
     olm.providedAPIs: >-
       CouchbaseAutoscaler.v2.couchbase.com,CouchbaseBackup.v2.couchbase.com,CouchbaseBackupRestore.v2.couchbase.com,CouchbaseBucket.v2.couchbase.com,CouchbaseCluster.v2.couchbase.com,CouchbaseCollection.v2.couchbase.com,CouchbaseCollectionGroup.v2.couchbase.com,CouchbaseEphemeralBucket.v2.couchbase.com,CouchbaseGroup.v2.couchbase.com,CouchbaseMemcachedBucket.v2.couchbase.com,CouchbaseMigrationReplication.v2.couchbase.com,CouchbaseReplication.v2.couchbase.com,CouchbaseRoleBinding.v2.couchbase.com,CouchbaseScope.v2.couchbase.com,CouchbaseScopeGroup.v2.couchbase.com,CouchbaseUser.v2.couchbase.com 
   name: couchbase-operatorgroup
-  namespace: couchbase-try
+  namespace: couchbase
 spec:
   targetNamespaces:
-  - couchbase-try
+  - couchbase
   installModes:
     - supported: true
       type: OwnNamespace

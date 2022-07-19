@@ -1,0 +1,89 @@
+kind: Route
+apiVersion: route.openshift.io/v1
+metadata:
+  name: cb-route
+  namespace: couchbase
+  labels:
+    app: couchbase
+    couchbase_cluster: cb-example
+spec:
+  subdomain: cb-route-couchbase
+  to:
+    kind: Service
+    name: cb-example-ui
+    weight: 100
+  port:
+    targetPort: couchbase-ui
+  wildcardPolicy: None
+
+---
+
+apiVersion: couchbase.com/v2
+kind: CouchbaseBucket
+metadata:
+  name: cb-bucket
+  labels:
+    cluster: cb-example
+  namespace: couchbase
+spec:
+  compressionMode: passive
+  ioPriority: low
+  evictionPolicy: valueOnly
+  memoryQuota: 100Mi
+  replicas: 2
+  conflictResolution: lww
+  enableFlush: false
+  enableIndexReplica: true
+
+---
+
+apiVersion: v1
+kind: Secret
+metadata:
+ name: couchbase-user-secret
+ namespace: couchbase
+data:
+ password: cGFzc3dvcmQ=
+---
+
+kind: CouchbaseUser
+apiVersion: couchbase.com/v2
+metadata:
+  name: cb-user
+  labels:
+    cluster: cb-example
+  namespace: couchbase
+spec:
+  fullName: CB User
+  authDomain: local
+  authSecret: couchbase-user-secret
+
+---
+
+apiVersion: couchbase.com/v2
+kind: CouchbaseGroup
+metadata:
+ name: cb-group
+ namespace: couchbase
+ labels:
+   cluster: cb-example
+spec:
+ roles:
+   - bucket: cb-bucket
+     name: bucket_full_access
+---
+
+kind: CouchbaseRoleBinding
+apiVersion: couchbase.com/v2
+metadata:
+  name: cb-role-binding
+  namespace: couchbase
+spec:
+  subjects:
+    - kind: CouchbaseUser
+      name: cb-user
+  roleRef:
+    kind: CouchbaseGroup
+    name: cb-group
+
+

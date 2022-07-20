@@ -1,0 +1,76 @@
+apiVersion: v1
+kind: Secret
+metadata:
+ name: sync-gateway-secret
+ namespace: couchbase
+ labels:
+   app: syncgateway
+stringData:
+  config.json: |-
+    {
+      "databases": {
+        "cb-example": {
+          "server": "couchbase://cb-example-srv.couchbase?network=default", 
+          "bucket": "cb-bucket", 
+          "username": "sync-gateway-user", 
+          "password": "password",
+          "users": {
+            "sync-gateway-user": {
+              "disabled": false,
+              "password": "password",
+              "admin_channels": [
+                "*"
+              ]
+            }
+          },
+          "enable_shared_bucket_access": true
+        }      
+      },
+      "disable_persistent_config": true,
+      "use_tls_server": false
+    }
+data:
+ password: cGFzc3dvcmQ=
+---
+
+kind: CouchbaseUser
+apiVersion: couchbase.com/v2
+metadata:
+  name: sync-gateway-user
+  labels:
+    cluster: cb-example
+    app: syncgateway
+  namespace: couchbase
+spec:
+  fullName: Sync Gateway User
+  authDomain: local
+  authSecret: sync-gateway-secret
+---
+
+apiVersion: couchbase.com/v2
+kind: CouchbaseGroup
+metadata:
+ name: sync-gateway-group
+ namespace: couchbase
+ labels:
+   cluster: cb-example
+   app: syncgateway
+spec:
+ roles:
+   - bucket: cb-bucket
+     name: mobile_sync_gateway
+---
+
+kind: CouchbaseRoleBinding
+apiVersion: couchbase.com/v2
+metadata:
+  name: sync-gateway-role-binding
+  namespace: couchbase
+spec:
+  subjects:
+    - kind: CouchbaseUser
+      name: sync-gateway-user
+  roleRef:
+    kind: CouchbaseGroup
+    name: sync-gateway-group
+

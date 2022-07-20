@@ -1,8 +1,11 @@
 ---
-- name: 'Install Couchbase Server and Sync Gateway'
+- name: 'Install Couchbase Server'
   hosts: localhost
   connection: local
   tasks:
   - name: 'Install Couchbase'
     include_role:
       name: "ocp4-install-couchbase"
+  - name: 'Install Sync Gateway'
+    include_role:
+      name: "ocp4-install-syncgateway"

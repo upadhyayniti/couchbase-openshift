@@ -1,0 +1,42 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: sync-gateway
+  labels:
+    app: sync-gateway
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sync-gateway
+  template:
+    metadata:
+      labels:
+        app: sync-gateway
+    spec:
+      containers:
+      - name: sync-gateway
+        image: registry.connect.redhat.com/couchbase/sync-gateway
+        volumeMounts:
+        - name: config
+          mountPath: /etc/sync_gateway
+          readOnly: true
+        ports:
+        - name: http-api
+          containerPort: 4984
+        - name: http-metrics
+          containerPort: 4986
+        resources:
+          requests:
+            cpu: "1"
+            memory: 1Gi
+          limits:
+            cpu: "2"
+            memory: 2Gi
+        env:
+        - name: GOMAXPROCS
+          value: "1"
+      volumes:
+      - name: config
+        secret:
+          secretName: sync-gateway-secret

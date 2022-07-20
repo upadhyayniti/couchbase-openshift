@@ -1,0 +1,52 @@
+- name: Create Sync Gateway Secret, User, Groups, Role Binding
+  shell: |
+    INSTALLATION_SYNC_USER_PRESENT=$(oc -n couchbase get secret --selector app=syncgateway -o name)
+
+    if [ -z "$INSTALLATION_SYNC_USER_PRESENT"];
+    then
+
+      echo "Creating Sync User"
+      oc -n couchbase apply -f {{ role_path}}/templates/syncgateway-ext.yaml.j2
+      sleep 30
+    else
+      echo "Sync Gateway Secret already exists. Assuming user, group, role-binding exists"
+    fi
+  register: sync_gateway_user_result
+
+- debug: msg="{{ sync_gateway_user_result.stdout }}"
+
+- name: Create Sync Gateway Deployment
+  shell: |
+    INSTALLATION_SYNCGATEWAY_PRESENT=$(oc -n couchbase get deployment --selector app=sync-gateway -o name)
+
+    if [ -z "$INSTALLATION_SYNCGATEWAY_PRESENT"];
+    then
+      echo "Creating Sync Gateway Deployment"
+      oc -n couchbase apply -f {{ role_path}}/templates/syncgateway.yaml.j2
+      sleep 180
+
+    else
+      echo "Sync Gateway Deployment already created"
+    fi
+  register: sync_gateway_result
+
+- debug: msg="{{ sync_gateway_result.stdout }}"
+
+
+- name: Create Sync Gateway Service and Ingress
+  shell: |
+    INSTALLATION_SYNCGATEWAY_SERVICE_PRESENT=$(oc -n couchbase get service --selector app=sync-gateway -o name)
+
+    if [ -z "$INSTALLATION_SYNCGATEWAY_SERVICE_PRESENT"];
+    then
+      echo "Creating Sync Gateway Service and Ingress"
+      oc -n couchbase apply -f {{ role_path}}/templates/syncgateway-service.yaml.j2
+      sleep 30
+
+    else
+      echo "Sync Gateway Service exists already. Assuming Ingress exists as well"
+    fi
+  register: sync_gateway_service_result
+
+- debug: msg="{{ sync_gateway_service_result.stdout }}"
+

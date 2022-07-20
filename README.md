@@ -14,8 +14,6 @@ The following are necessary to proceed with the setup of this demonstration:
     - [python client for openshift - requires python](https://pypi.org/project/openshift/)
     - [jq](https://stedolan.github.io/jq/)
     - python
-    - openssl
-    - keytool
 
 # Setup
 

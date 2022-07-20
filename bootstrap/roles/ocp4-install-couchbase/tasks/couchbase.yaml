@@ -19,9 +19,21 @@
 - debug: msg="{{ cm_installation_state_result.stdout }}"
 
 - name: Install Couchbase Operator
-  kubernetes.core.k8s:
-    state: present
-    definition: "{{ lookup('template', 'subs-couchbase.yaml.j2') }}"
+  shell: |
+    INSTALLATION_OPERATOR_PRESENT=$(oc -n couchbase get pods --selector app=couchbase-operator -o name)
+
+    if [ -z "$INSTALLATION_OPERATOR_PRESENT"];
+    then
+
+      echo "Creating Couchbase Operator"
+      oc -n couchbase apply -f {{ role_path}}/templates/subs-couchbase.yaml.j2
+      sleep 30
+    else
+      echo "Couchbase Operator already installed"
+    fi
+  register: couchbase_operator_result
+
+- debug: msg="{{ couchbase_operator_result.stdout }}"
 
 - name: Wait for Couchbase CRD to exist
   kubernetes.core.k8s_info:
@@ -33,10 +45,6 @@
   until: crds.resources|length > 0
   retries: 10
   delay: 30
-
-- name: Pause for 30 seconds to let deployment resources to be added
-  pause:
-    seconds: 30
 
 - name: Wait for Couchbase Operator to be available
   shell: |
@@ -53,20 +61,41 @@
     state: directory
   when: not output_dir.stat.exists 
 
-- name: install Couchbase Instance
-  kubernetes.core.k8s:
-    state: present
-    definition: "{{ lookup('template', 'couchbase.yaml.j2') }}"
+- name: Install Couchbase Instance
+  shell: |
+    INSTALLATION_CLUSTER_PRESENT=$(oc -n couchbase get pods --selector app=couchbase -o name)
 
-- name: Pause for 180 seconds to let deployment resources to be added
-  pause:
-    seconds: 180
+    if [ -z "$INSTALLATION_CLUSTER_PRESENT"];
+    then
+      echo "Creating Couchbase Cluster"
+      oc -n couchbase apply -f {{ role_path}}/templates/couchbase.yaml.j2
+      sleep 180
+
+    else
+      echo "Couchbase cluster already created"
+    fi
+  register: couchbase_cluster_result
+
+- debug: msg="{{ couchbase_cluster_result.stdout }}"
 
 - name: Wait for Couchbase pods
   shell: |
     oc -n couchbase wait --for=condition=Ready pods --timeout=360s --selector app=couchbase
 
-- name: Create Route, Bucket, User, Group, Role Binding
-  kubernetes.core.k8s:
-    state: present
-    definition: "{{ lookup('template', 'couchbase-ext.yaml.j2') }}"
+- name: Create Route, Bucket, Secret, User, Group, Role-Binding
+  shell: |
+    INSTALLATION_ROUTE_PRESENT=$(oc -n couchbase get route --selector app=couchbase -o name)
+
+    if [ -z "$INSTALLATION_ROUTE_PRESENT"];
+    then
+      echo "Creating Route, Bucket, Secret, User, Group, Role-Binding"
+      oc -n couchbase apply -f {{ role_path}}/templates/couchbase-ext.yaml.j2
+      sleep 30
+    else
+      echo "Couchbase route already created. Assuming bucket, secret, user, group and role-binding also created."
+    fi
+  register: couchbase_route_result
+
+- debug: msg="{{ couchbase_route_result.stdout }}"
+
+

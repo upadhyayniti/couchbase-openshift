@@ -15,7 +15,6 @@ spec:
   port:
     targetPort: couchbase-ui
   wildcardPolicy: None
-
 ---
 
 apiVersion: couchbase.com/v2
@@ -34,7 +33,6 @@ spec:
   conflictResolution: lww
   enableFlush: false
   enableIndexReplica: true
-
 ---
 
 apiVersion: v1
@@ -57,7 +55,6 @@ spec:
   fullName: CB User
   authDomain: local
   authSecret: couchbase-user-secret
-
 ---
 
 apiVersion: couchbase.com/v2
@@ -85,5 +82,4 @@ spec:
   roleRef:
     kind: CouchbaseGroup
     name: cb-group
-
 

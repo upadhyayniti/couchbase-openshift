@@ -8,11 +8,9 @@ The following are necessary to proceed with the setup of this demonstration:
     - This setup was tested on a 4.9.x Openshift cluster. 
     - Prior versions of 4.x.x may also work as well, but have not been tested. 
 - Make sure the following are installed and added to your PATH: 
-    - [kubectx/kubens](https://github.com/ahmetb/kubectx)
     - [openshift client tools - oc - >= v4.6](https://mirror.openshift.com/pub/openshift-v4/clients/ocp/)
     - [ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
     - [python client for openshift - requires python](https://pypi.org/project/openshift/)
-    - [jq](https://stedolan.github.io/jq/)
     - python
 
 # Setup
@@ -35,3 +33,13 @@ To install an entire ready-made infrastructure:
 # execute the bash cleanup script to remove
 /.cleanup.sh
 ```
+
+Note: Various assumptions are made as part of Couchbase setup
+```
+Namespace: Couchbase
+Cluster Name: cb-example
+Bucket Name: cb-bucket
+Users: cb-user, sync-gateway-user
+Groups: cb-group, sync-gateway-group
+```
+

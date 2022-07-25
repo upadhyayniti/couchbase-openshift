@@ -1,3 +1,4 @@
+oc -n couchbase delete deployment --all
 oc -n couchbase delete CouchbaseCluster --all
 oc -n couchbase delete subscriptions couchbase-enterprise-certified
 oc -n couchbase delete operatorgroups couchbase-operatorgroup

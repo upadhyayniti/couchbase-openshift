@@ -34,6 +34,8 @@ To install an entire ready-made infrastructure:
 /.cleanup.sh
 ```
 
+To find admin username and password for Couchbase UI login, look for cb-example secret for Administrator password.
+
 Note: Various assumptions are made as part of Couchbase setup
 ```
 Namespace: Couchbase
@@ -43,3 +45,15 @@ Users: cb-user, sync-gateway-user
 Groups: cb-group, sync-gateway-group
 ```
 
+Insert Sample Data in cb-bucket._default._default using UI and sampledata.json in repo.
+
+Create Primary Index
+```
+CREATE PRIMARY INDEX `adv_id_default_prim` ON `cb-bucket`._default._default
+```
+
+Write query to get data
+
+```
+select * from `cb-bucket`._default._default where address.city like '%Boston%'
+```

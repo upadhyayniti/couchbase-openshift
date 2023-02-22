@@ -25,7 +25,7 @@ spec:
   backup:
     serviceAccountName: couchbase-backup
     image: >-
-      registry.connect.redhat.com/couchbase/operator-backup@sha256:c0ab51854294d117c4ecf867b541ed6dc67410294d72f560cc33b038d98e4b76
+      registry.connect.redhat.com/couchbase/operator-backup@sha256:7bcc296a4ce58bc0eccab5522712e97a92bc81f2b7e9b2fc7d1b7571a1a169cb
     managed: false
     selector:
       matchLabels:
@@ -36,7 +36,7 @@ spec:
     prometheus:
       enabled: false
       image: >-
-        registry.connect.redhat.com/couchbase/exporter@sha256:b9ff3aec88f42f8e6164d61a1c5f845b4c3dd3f606ac552170d5c61311ce5784
+        registry.connect.redhat.com/couchbase/exporter@sha256:d392e6c902f784abfc083c9bf5ce11895d0183347b6c21b259678fd85f312cd4
   hibernationStrategy: Immediate
   buckets:
     managed: true
@@ -101,7 +101,7 @@ spec:
       matchLabels:
         cluster: cb-example
   image: >-
-    registry.connect.redhat.com/couchbase/server@sha256:cb8c5aba14feb955854a17c0923f79c8476872f86b3f52570d859b991d23231b
+    registry.connect.redhat.com/couchbase/server@sha256:d0d1734a98fea7639793873d9a54c27d6be6e7838edad2a38e8d451d66be3497
   autoResourceAllocation:
     cpuLimits: '4'
     cpuRequests: '2'
@@ -121,7 +121,7 @@ spec:
       manageConfiguration: true
       sidecar:
         configurationMountPath: /fluent-bit/config/
-        image: 'couchbase/fluent-bit:1.1.1'
+        image: 'couchbase/fluent-bit:1.2.1'
   logRetentionTime: 604800s
   logRetentionCount: 20
 

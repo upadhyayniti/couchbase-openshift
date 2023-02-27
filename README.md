@@ -12,6 +12,9 @@ The following are necessary to proceed with the setup of this demonstration:
     - [ansible](https://docs.ansible.com/ansible/latest/installation_guide/intro_installation.html)
     - [python client for openshift - requires python](https://pypi.org/project/openshift/)
     - python
+- For python, make sure alternatives is setup so python/python3 --version and ansible --version | grep python has same version
+    - If not, update python and python3 alternatives to match ansible's python version (https://linuxconfig.org/how-to-change-from-default-to-alternative-python-version-on-debian-linux)
+    - Also make sure OpenShift module is installed for that python version (pip install openshift pyyaml kubernetes )
 
 # Setup
 

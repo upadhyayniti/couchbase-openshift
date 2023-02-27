@@ -51,9 +51,6 @@ spec:
         - data
         - index
         - query
-        - search
-        - eventing
-        - analytics
   hibernate: false
   networking:
     adminConsoleServices:
@@ -75,9 +72,6 @@ spec:
     query:
       backfillEnabled: true
       temporarySpace: 1Gi
-    analyticsServiceMemoryQuota: 1Gi
-    eventingServiceMemoryQuota: 256Mi
-    searchServiceMemoryQuota: 256Mi
     autoFailoverMaxCount: 3
     dataServiceMemoryQuota: 256Mi
     autoFailoverOnDataDiskIssuesTimePeriod: 120s
